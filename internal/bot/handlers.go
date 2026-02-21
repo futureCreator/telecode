@@ -114,25 +114,17 @@ func (m *Manager) handleMessage(ctx context.Context, ws *WorkspaceBot, chatID in
 		return nil
 	}
 
-	// Loading message
-	loadingMsg, _ := ws.TgBot.SendMessage(ctx, tu.Message(
-		tu.ID(chatID),
-		"⏳ Processing...",
-	))
+	// Send typing action
+	_ = ws.TgBot.SendChatAction(ctx, &telego.SendChatActionParams{
+		ChatID: tu.ID(chatID),
+		Action: telego.ChatActionTyping,
+	})
 
 	// Execute command with working directory
 	output := runCommandWithDir(cmd, ws.Config.WorkingDir)
 
 	// Save session ID
 	ws.Bot.UpdateSessionFromOutput(chatID, ws.Bot.GetCLI(chatID), output)
-
-	// Delete loading message
-	if loadingMsg != nil {
-		ws.TgBot.DeleteMessage(ctx, &telego.DeleteMessageParams{
-			ChatID:    tu.ID(chatID),
-			MessageID: loadingMsg.MessageID,
-		})
-	}
 
 	// Send result (chunked)
 	return sendChunks(ctx, ws.TgBot, chatID, output)
