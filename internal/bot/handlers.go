@@ -142,7 +142,9 @@ func (m *Manager) handleMessage(ctx context.Context, ws *WorkspaceBot, chatID in
 func sendChunks(ctx context.Context, bot *telego.Bot, chatID int64, text string) error {
 	const maxMessageLength = 4000
 
-	if text == "" {
+	// Trim whitespace and check if empty
+	trimmedText := strings.TrimSpace(text)
+	if trimmedText == "" {
 		_, err := bot.SendMessage(ctx, tu.Message(
 			tu.ID(chatID),
 			"(empty response)",
@@ -150,8 +152,12 @@ func sendChunks(ctx context.Context, bot *telego.Bot, chatID int64, text string)
 		return err
 	}
 
-	chunks := chunkString(text, maxMessageLength)
+	chunks := chunkString(trimmedText, maxMessageLength)
 	for _, chunk := range chunks {
+		// Ensure chunk is not empty after trimming
+		if strings.TrimSpace(chunk) == "" {
+			continue
+		}
 		_, err := bot.SendMessage(ctx, tu.Message(
 			tu.ID(chatID),
 			chunk,
