@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Print version on startup
-	fmt.Printf("🤖 Telecode v%s\n\n", version)
+	fmt.Printf("🤖 Telecode %s\n\n", version)
 
 	// Generate example config if requested
 	if *generateConfig {
