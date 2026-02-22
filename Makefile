@@ -4,7 +4,7 @@
 BINARY_NAME=telecode
 MAIN_PACKAGE=./cmd/telecode
 BUILD_DIR=./build
-VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+VERSION=$(shell git describe --tags --abbrev=0 2>/dev/null || echo "dev")
 LDFLAGS=-ldflags "-X main.version=$(VERSION) -s -w -extldflags '-static'"
 CGO_FLAGS=CGO_ENABLED=0
 
